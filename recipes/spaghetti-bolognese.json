@@ -1,0 +1,24 @@
+{
+  "title": "Spaghetti Bolognese",
+  "slug": "spaghetti-bolognese",
+  "description": "A hearty Italian pasta dish with a rich meat sauce.",
+  "difficulty": "Medium",
+  "prep_minutes": 15,
+  "cook_minutes": 45,
+  "calories": 600,
+  "servings": 4,
+  "ingredients": [
+    "1 lb ground beef",
+    "1 onion, chopped",
+    "2 garlic cloves, minced",
+    "1 can tomato sauce",
+    "Spaghetti noodles"
+  ],
+  "steps": [
+    "Cook the beef in a skillet until browned.",
+    "Add onion and garlic, cook until soft.",
+    "Stir in tomato sauce and simmer 30 minutes.",
+    "Boil spaghetti, drain, and serve with sauce."
+  ],
+  "tags": ["pasta", "Italian", "dinner"]
+}
