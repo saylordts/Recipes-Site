@@ -1,7 +1,51 @@
 <!DOCTYPE html>
+<script type="module">
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCGVfqEoq0V2JzladLytXCVMcF0LzFM9es",
+  authDomain: "recipe-book-430c0.firebaseapp.com",
+  projectId: "recipe-book-430c0",
+  storageBucket: "recipe-book-430c0.firebasestorage.app",
+  messagingSenderId: "344599762686",
+  appId: "1:344599762686:web:7326b5cc3aa1b7959277af"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+  const provider = new GoogleAuthProvider();
+
+async function login() {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (err) {
+    alert("Login failed: " + err.message);
+  }
+}
+
+// Monitor login state
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById("loginBtn").style.display = "none";
+    loadRecipes(); // Only load recipes if logged in
+  } else {
+    document.getElementById("loginBtn").style.display = "block";
+    document.getElementById("recipeBody").innerHTML = "";
+  }
+});
+
+</script>
+
 <html>
 <head>
   <title>My Recipes</title>
+  <button id="loginBtn" onclick="login()">Login with Google</button>
+
   <style>
     table { border-collapse: collapse; width: 100%; }
     th, td { border: 1px solid #ccc; padding: 8px; }
@@ -24,9 +68,28 @@
   </table>
 
   <script>
-    async function loadRecipes() {
-      // For now, we’ll manually list recipe files
-      const files = ["recipes/spaghetti-bolognese.json"];
+async function loadRecipes() {
+  const tbody = document.getElementById("recipeBody");
+  tbody.innerHTML = "";
+
+  // Load all recipes from Firestore
+  const querySnapshot = await getDocs(collection(db, "recipes"));
+  querySnapshot.forEach((doc) => {
+    const recipe = doc.data();
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td><a href="recipe.html?slug=${recipe.slug}">${recipe.title}</a></td>
+      <td>${recipe.difficulty}</td>
+      <td>${recipe.prep_minutes}</td>
+      <td>${recipe.cook_minutes}</td>
+      <td>${recipe.calories}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+
 
       const tbody = document.getElementById("recipeBody");
 
