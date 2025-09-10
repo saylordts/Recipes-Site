@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Recipe</title>
+</head>
+<body>
+  <div id="content">Loading recipe...</div>
+
+  <script>
+    async function loadRecipe() {
+      // Get slug from URL, e.g. recipe.html?slug=spaghetti-bolognese
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get("slug");
+
+      if (!slug) {
+        document.getElementById("content").innerText = "No recipe specified.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`recipes/${slug}.json`);
+        if (!res.ok) throw new Error("Recipe not found");
+
+        const recipe = await res.json();
+
+        document.title = recipe.title;
+        document.getElementById("content").innerHTML = `
+          <h1>${recipe.title}</h1>
+          <p><strong>Difficulty:</strong> ${recipe.difficulty}</p>
+          <p><strong>Prep time:</strong> ${recipe.prep_minutes} minutes</p>
+          <p><strong>Cook time:</strong> ${recipe.cook_minutes} minutes</p>
+          <p><strong>Calories:</strong> ${recipe.calories}</p>
+
+          <h2>Ingredients</h2>
+          <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+
+          <h2>Steps</h2>
+          <ol>${recipe.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+        `;
+      } catch (err) {
+        document.getElementById("content").innerText = "Error loading recipe.";
+        console.error(err);
+      }
+    }
+
+    loadRecipe();
+  </script>
+</body>
+</html>
