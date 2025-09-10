@@ -2,9 +2,103 @@
 <html>
 <head>
   <title>My Recipes</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { cursor: pointer; background: #f0f0f0; }
+  </style>
 </head>
 <body>
-  <h1>Welcome to Our Recipe Book</h1>
-  <p>This is just a test. Soon we’ll add recipes!</p>
+  <h1>Our Recipe Book</h1>
+  <table id="recipeTable">
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)">Title</th>
+        <th onclick="sortTable(1)">Difficulty</th>
+        <th onclick="sortTable(2)">Prep (min)</th>
+        <th onclick="sortTable(3)">Cook (min)</th>
+        <th onclick="sortTable(4)">Calories</th>
+      </tr>
+    </thead>
+    <tbody id="recipeBody"></tbody>
+  </table>
+
+  <script>
+    async function loadRecipes() {
+      // For now, we’ll manually list recipe files
+      const files = ["recipes/spaghetti-bolognese.json"];
+
+      const tbody = document.getElementById("recipeBody");
+
+      for (let file of files) {
+        const res = await fetch(file);
+        const recipe = await res.json();
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><a href="recipes/${recipe.slug}.html">${recipe.title}</a></td>
+          <td>${recipe.difficulty}</td>
+          <td>${recipe.prep_minutes}</td>
+          <td>${recipe.cook_minutes}</td>
+          <td>${recipe.calories}</td>
+        `;
+        tbody.appendChild(row);
+
+        // Create a page for the recipe
+        const page = `
+<!DOCTYPE html>
+<html>
+<head><title>${recipe.title}</title></head>
+<body>
+  <h1>${recipe.title}</h1>
+  <p><strong>Difficulty:</strong> ${recipe.difficulty}</p>
+  <p><strong>Prep time:</strong> ${recipe.prep_minutes} minutes</p>
+  <p><strong>Cook time:</strong> ${recipe.cook_minutes} minutes</p>
+  <p><strong>Calories:</strong> ${recipe.calories}</p>
+  <h2>Ingredients</h2>
+  <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+  <h2>Steps</h2>
+  <ol>${recipe.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+</body>
+</html>`;
+        // Save as file in repo (for now, we’ll guide you to do this manually)
+        console.log("Copy this into recipes/" + recipe.slug + ".html:\n\n" + page);
+      }
+    }
+
+    function sortTable(n) {
+      const table = document.getElementById("recipeTable");
+      let switching = true, dir = "asc", switchcount = 0;
+
+      while (switching) {
+        switching = false;
+        const rows = table.rows;
+        for (let i = 1; i < (rows.length - 1); i++) {
+          let shouldSwitch = false;
+          let x = rows[i].getElementsByTagName("TD")[n];
+          let y = rows[i + 1].getElementsByTagName("TD")[n];
+
+          let xVal = isNaN(x.innerText) ? x.innerText.toLowerCase() : Number(x.innerText);
+          let yVal = isNaN(y.innerText) ? y.innerText.toLowerCase() : Number(y.innerText);
+
+          if ((dir == "asc" && xVal > yVal) || (dir == "desc" && xVal < yVal)) {
+            shouldSwitch = true;
+            break;
+          }
+        if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+          switchcount++;
+        }
+        }
+        if (switchcount == 0 && dir == "asc") {
+          dir = "desc";
+          switching = true;
+        }
+      }
+    }
+
+    loadRecipes();
+  </script>
 </body>
 </html>
