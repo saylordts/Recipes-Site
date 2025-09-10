@@ -36,7 +36,7 @@
 
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td><a href="recipes/${recipe.slug}.html">${recipe.title}</a></td>
+          <td><a href="recipe.html?slug=${recipe.slug}">${recipe.title}</a></td>
           <td>${recipe.difficulty}</td>
           <td>${recipe.prep_minutes}</td>
           <td>${recipe.cook_minutes}</td>
